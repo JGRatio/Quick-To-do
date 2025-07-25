@@ -1,14 +1,20 @@
 
+import { useState } from 'react';
 import { CheckSquare, Sparkles } from 'lucide-react';
 import { useTodos } from './hooks/useTodos';
-import { TodoForm } from './components/TodoForm';
-import { TodoItem } from './components/TodoItem';
-import { TodoFilters } from './components/TodoFilters';
-import { TodoStats } from './components/TodoStats';
+import { Navigation } from './components/Navigation';
+import { TodosView } from './views/TodosView';
+import { StatisticsView } from './views/StatisticsView';
+import { SearchView } from './views/SearchView';
+import { CategoriesView } from './views/CategoriesView';
+import type { ViewType } from './types/navigation';
 
 function App() {
+  const [currentView, setCurrentView] = useState<ViewType>('todos');
+  
   const {
     todos,
+    allTodos,
     stats,
     categories,
     filters,
@@ -19,11 +25,70 @@ function App() {
     editTodo,
     clearCompleted,
     updatePriority,
+    updateCategory,
+    deleteCategory,
   } = useTodos();
+
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'todos':
+        return (
+          <TodosView
+            todos={todos}
+            filters={filters}
+            categories={categories}
+            onAdd={addTodo}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
+            onEdit={editTodo}
+            onUpdatePriority={updatePriority}
+            totalCount={allTodos.length}
+          />
+        );
+      
+      case 'statistics':
+        return (
+          <StatisticsView
+            stats={stats}
+            todos={allTodos}
+          />
+        );
+      
+      case 'search':
+        return (
+          <SearchView
+            todos={todos}
+            allTodos={allTodos}
+            filters={filters}
+            onFiltersChange={setFilters}
+            categories={categories}
+            onClearCompleted={clearCompleted}
+            completedCount={stats.completed}
+            onToggle={toggleTodo}
+            onDelete={deleteTodo}
+            onEdit={editTodo}
+            onUpdatePriority={updatePriority}
+          />
+        );
+      
+      case 'categories':
+        return (
+          <CategoriesView
+            categories={categories}
+            todos={allTodos}
+            onUpdateCategory={updateCategory}
+            onDeleteCategory={deleteCategory}
+          />
+        );
+      
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Header */}
         <header className="text-center mb-8">
           <div className="flex items-center justify-center space-x-3 mb-4">
@@ -40,70 +105,13 @@ function App() {
           </p>
         </header>
 
-        {/* Stats */}
-        <TodoStats stats={stats} />
+        {/* Navigation */}
+        <Navigation currentView={currentView} onViewChange={setCurrentView} />
 
-        {/* Add Todo Form */}
-        <TodoForm onAdd={addTodo} categories={categories} />
-
-        {/* Filters */}
-        <TodoFilters
-          filters={filters}
-          onFiltersChange={setFilters}
-          categories={categories}
-          onClearCompleted={clearCompleted}
-          completedCount={stats.completed}
-        />
-
-        {/* Todo List */}
-        <div className="space-y-3">
-          {todos.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-                <CheckSquare size={48} className="mx-auto text-gray-300 mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {filters.filter === 'all' && !filters.search && !filters.category
-                    ? 'No todos yet'
-                    : 'No todos match your filters'}
-                </h3>
-                <p className="text-gray-500">
-                  {filters.filter === 'all' && !filters.search && !filters.category
-                    ? 'Add your first todo above to get started!'
-                    : 'Try adjusting your filters or add a new todo.'}
-                </p>
-              </div>
-            </div>
-          ) : (
-            <>
-              {/* Results Count */}
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-gray-600">
-                  Showing {todos.length} of {stats.total} todo{stats.total === 1 ? '' : 's'}
-                </p>
-                {filters.filter !== 'all' && (
-                  <button
-                    onClick={() => setFilters({ ...filters, filter: 'all' })}
-                    className="text-sm text-blue-600 hover:text-blue-800 underline"
-                  >
-                    Show all
-                  </button>
-                )}
-              </div>
-
-              {/* Todo Items */}
-              {todos.map((todo) => (
-                <TodoItem
-                  key={todo.id}
-                  todo={todo}
-                  onToggle={toggleTodo}
-                  onDelete={deleteTodo}
-                  onEdit={editTodo}
-                  onUpdatePriority={updatePriority}
-                />
-              ))}
-            </>
-          )}
-        </div>
+        {/* Current View */}
+        <main>
+          {renderCurrentView()}
+        </main>
 
         {/* Footer */}
         <footer className="mt-16 text-center text-gray-500 text-sm">

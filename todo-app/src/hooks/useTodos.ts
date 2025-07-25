@@ -84,6 +84,26 @@ export const useTodos = () => {
     );
   }, []);
 
+  const updateCategory = useCallback((oldCategory: string, newCategory: string) => {
+    setTodos(prev =>
+      prev.map(todo =>
+        todo.category === oldCategory
+          ? { ...todo, category: newCategory, updatedAt: new Date() }
+          : todo
+      )
+    );
+  }, []);
+
+  const deleteCategory = useCallback((category: string) => {
+    setTodos(prev =>
+      prev.map(todo =>
+        todo.category === category
+          ? { ...todo, category: undefined, updatedAt: new Date() }
+          : todo
+      )
+    );
+  }, []);
+
   // Filter and sort todos based on current filters
   const filteredTodos = todos
     .filter(todo => {
@@ -140,5 +160,7 @@ export const useTodos = () => {
     editTodo,
     clearCompleted,
     updatePriority,
+    updateCategory,
+    deleteCategory,
   };
 };
