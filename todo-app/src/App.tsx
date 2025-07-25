@@ -87,20 +87,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)' }}>
+      <div className="container">
         {/* Header */}
-        <header className="text-center mb-8">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-              <CheckSquare size={32} className="text-white" />
+        <header className="header">
+          <div className="header-title">
+            <div className="header-icon">
+              <CheckSquare size={32} />
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Modern Todo
-            </h1>
-            <Sparkles size={20} className="text-purple-500" />
+            <h1>Modern Todo</h1>
+            <Sparkles size={20} style={{ color: '#764ba2' }} />
           </div>
-          <p className="text-gray-600 text-lg">
+          <p className="header-subtitle">
             Organize your tasks with style and efficiency
           </p>
         </header>
@@ -114,11 +112,9 @@ function App() {
         </main>
 
         {/* Footer */}
-        <footer className="mt-16 text-center text-gray-500 text-sm">
-          <div className="flex items-center justify-center space-x-2">
+        <footer className="text-center mt-4" style={{ color: '#718096', fontSize: '0.875rem' }}>
+          <div className="flex items-center justify-center gap-2">
             <span>Built with React & TypeScript</span>
-            <span>•</span>
-            <span>Styled with Tailwind CSS</span>
             <span>•</span>
             <span>Icons by Lucide</span>
           </div>

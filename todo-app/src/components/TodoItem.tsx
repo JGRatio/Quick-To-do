@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Check, Edit3, Trash2, Flag, X, Save } from 'lucide-react';
 import type { Todo } from '../types/todo';
-import clsx from 'clsx';
 
 interface TodoItemProps {
   todo: Todo;
@@ -40,53 +39,35 @@ export const TodoItem: React.FC<TodoItemProps> = ({
   const getPriorityColor = (priority: Todo['priority']) => {
     switch (priority) {
       case 'high':
-        return 'text-red-500';
+        return '#f56565';
       case 'medium':
-        return 'text-yellow-500';
+        return '#ed8936';
       case 'low':
-        return 'text-green-500';
+        return '#48bb78';
       default:
-        return 'text-gray-400';
+        return '#a0aec0';
     }
   };
 
-  const getPriorityBg = (priority: Todo['priority']) => {
-    switch (priority) {
-      case 'high':
-        return 'bg-red-50 border-red-200';
-      case 'medium':
-        return 'bg-yellow-50 border-yellow-200';
-      case 'low':
-        return 'bg-green-50 border-green-200';
-      default:
-        return 'bg-gray-50 border-gray-200';
-    }
-  };
+  const todoClasses = [
+    'todo-item',
+    todo.completed ? 'completed' : '',
+    `priority-${todo.priority}`
+  ].filter(Boolean).join(' ');
 
   return (
-    <div
-      className={clsx(
-        'todo-item group',
-        todo.completed && 'completed',
-        getPriorityBg(todo.priority)
-      )}
-    >
-      <div className="flex items-center space-x-3 flex-1">
+    <div className={todoClasses}>
+      <div className="todo-content">
         {/* Checkbox */}
         <button
           onClick={() => onToggle(todo.id)}
-          className={clsx(
-            'flex items-center justify-center w-5 h-5 rounded-full border-2 transition-all duration-200',
-            todo.completed
-              ? 'bg-blue-500 border-blue-500 text-white'
-              : 'border-gray-300 hover:border-blue-400'
-          )}
+          className={`todo-checkbox ${todo.completed ? 'checked' : ''}`}
         >
           {todo.completed && <Check size={12} />}
         </button>
 
         {/* Todo Text */}
-        <div className="flex-1">
+        <div style={{ flex: 1 }}>
           {isEditing ? (
             <input
               type="text"
@@ -94,23 +75,17 @@ export const TodoItem: React.FC<TodoItemProps> = ({
               onChange={(e) => setEditText(e.target.value)}
               onKeyDown={handleKeyPress}
               onBlur={handleEdit}
-              className="w-full px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="form-input"
+              style={{ fontSize: '0.875rem', padding: '0.5rem' }}
               autoFocus
             />
           ) : (
-            <div className="flex items-center space-x-2">
-              <span
-                className={clsx(
-                  'text-sm',
-                  todo.completed
-                    ? 'line-through text-gray-500'
-                    : 'text-gray-900'
-                )}
-              >
+            <div className="flex items-center gap-2">
+              <span className={`todo-text ${todo.completed ? 'completed' : ''}`}>
                 {todo.text}
               </span>
               {todo.category && (
-                <span className="px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded-full">
+                <span className="todo-category">
                   {todo.category}
                 </span>
               )}
@@ -119,19 +94,17 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         </div>
 
         {/* Priority Flag */}
-        <Flag
-          size={16}
-          className={clsx('transition-colors', getPriorityColor(todo.priority))}
-        />
+        <Flag size={16} style={{ color: getPriorityColor(todo.priority) }} />
       </div>
 
       {/* Actions */}
-      <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+      <div className="todo-actions">
         {/* Priority Selector */}
         <select
           value={todo.priority}
           onChange={(e) => onUpdatePriority(todo.id, e.target.value as Todo['priority'])}
-          className="text-xs border border-gray-300 rounded px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          className="form-select"
+          style={{ fontSize: '0.75rem', padding: '0.25rem' }}
         >
           <option value="low">Low</option>
           <option value="medium">Med</option>
@@ -139,11 +112,12 @@ export const TodoItem: React.FC<TodoItemProps> = ({
         </select>
 
         {isEditing ? (
-          <div className="flex space-x-1">
+          <div className="flex gap-2">
             <button
               onClick={handleEdit}
-              className="p-1 text-green-600 hover:bg-green-100 rounded transition-colors"
+              className="action-btn"
               title="Save"
+              style={{ color: '#48bb78' }}
             >
               <Save size={14} />
             </button>
@@ -152,29 +126,30 @@ export const TodoItem: React.FC<TodoItemProps> = ({
                 setEditText(todo.text);
                 setIsEditing(false);
               }}
-              className="p-1 text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              className="action-btn"
               title="Cancel"
+              style={{ color: '#a0aec0' }}
             >
               <X size={14} />
             </button>
           </div>
         ) : (
-          <>
+          <div className="flex gap-2">
             <button
               onClick={() => setIsEditing(true)}
-              className="p-1 text-blue-600 hover:bg-blue-100 rounded transition-colors"
+              className="action-btn edit"
               title="Edit"
             >
               <Edit3 size={14} />
             </button>
             <button
               onClick={() => onDelete(todo.id)}
-              className="p-1 text-red-600 hover:bg-red-100 rounded transition-colors"
+              className="action-btn delete"
               title="Delete"
             >
               <Trash2 size={14} />
             </button>
-          </>
+          </div>
         )}
       </div>
     </div>
