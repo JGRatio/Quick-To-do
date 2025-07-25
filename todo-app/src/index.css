@@ -50,10 +50,11 @@
 
 @layer base {
   * {
-    @apply border-gray-200;
+    border-color: #e5e7eb;
   }
   body {
-    @apply bg-gray-50 text-gray-900;
+    background-color: #f9fafb;
+    color: #111827;
   }
 }
 
